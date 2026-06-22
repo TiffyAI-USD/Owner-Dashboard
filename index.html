@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TiffyAI Owner Dashboard</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #e6e6e6; padding: 20px; }
+        :root { --gold: #d4a373; --gold2: #f1b86b; --whatsapp: #25D366; }
+        .card { background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #333; margin-bottom: 20px; }
+        h1, h2 { font-family: 'Bebas Neue'; color: var(--gold); }
+        button { background: linear-gradient(180deg, var(--gold), var(--gold2)); border: none; padding: 12px 20px; border-radius: 30px; cursor: pointer; font-family: 'Bebas Neue'; font-size: 1rem; }
+        
+        /* Print Styles */
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; color: #000; }
+        }
+    </style>
+</head>
+<body>
+
+    <div style="max-width:600px; margin:auto;">
+        <h1>OWNER COMMAND CENTER</h1>
+        
+        <!-- Multi-Store Switcher -->
+        <div class="card">
+            <label>Select Active Store:</label>
+            <select id="storeSwitcher" onchange="switchStore(this.value)" style="width:100%; padding:10px; background:#000; color:#fff; border:1px solid var(--gold);">
+                <option value="Sugarloaf">Sugarloaf</option>
+                <option value="Papa-Ron-s-Oasis">Papa-Ron's Oasis</option>
+                <option value="NewStore">Add New Store</option>
+            </select>
+        </div>
+
+        <div class="card">
+            <p>Current TUSD Balance:</p>
+            <h2 id="dashBalance">0.00</h2>
+            <button onclick="openKYC()">VERIFY KYC</button>
+        </div>
+
+        <div class="card">
+            <h2>RECENT RECEIPTS</h2>
+            <div id="receiptList"></div>
+        </div>
+    </div>
+
+<script>
+    function switchStore(name) {
+        localStorage.setItem("Current_Tiffy_Store", name);
+        refreshDashboard();
+    }
+
+    function refreshDashboard() {
+        const store = localStorage.getItem("Current_Tiffy_Store") || "Sugarloaf";
+        const balance = localStorage.getItem(store + "_TUSD_Nitro_Storage") || "0.00";
+        document.getElementById('dashBalance').innerText = balance + " TUSD";
+        renderReceipts(store);
+    }
+
+    function renderReceipts(store) {
+        const ledger = JSON.parse(localStorage.getItem(store + "_Ledger") || "[]");
+        const list = document.getElementById('receiptList');
+        list.innerHTML = ledger.map(r => `
+            <div style="border-bottom:1px solid #444; padding:10px; display:flex; justify-content:space-between;">
+                <span>${r.item} - ${r.price} TUSD</span>
+                <button onclick="printReceipt('${r.receiptId}')">Print</button>
+            </div>
+        `).join('');
+    }
+
+    function printReceipt(id) {
+        const store = localStorage.getItem("Current_Tiffy_Store");
+        const ledger = JSON.parse(localStorage.getItem(store + "_Ledger") || "[]");
+        const rec = ledger.find(r => r.receiptId === id);
+        
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html><body><div id="printArea" style="font-family:monospace; text-align:center;">
+                <h2>RECEIPT</h2>
+                <p>Store: ${store}</p>
+                <p>Item: ${rec.item}</p>
+                <p>Total: ${rec.price} TUSD</p>
+                <p>Date: ${rec.date}</p>
+            </div></body></html>
+        `);
+        printWindow.print();
+    }
+
+    function openKYC() { window.open("https://tiffyai-usd.github.io/KYC/", "_blank"); }
+
+    window.addEventListener('storage', refreshDashboard);
+    document.addEventListener('DOMContentLoaded', refreshDashboard);
+</script>
+</body>
+</html>
