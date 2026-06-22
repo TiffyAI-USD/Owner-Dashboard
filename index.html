@@ -9,7 +9,7 @@
         .card { background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #333; margin-bottom: 20px; }
         h1, h2 { font-family: 'Bebas Neue', sans-serif; color: var(--gold); }
         input, select { width: 100%; padding: 12px; background: #000; color: #fff; border: 1px solid var(--gold); margin-top: 5px; box-sizing: border-box; }
-        button { background: linear-gradient(180deg, var(--gold), var(--gold2)); border: none; padding: 12px 20px; border-radius: 30px; cursor: pointer; font-family: 'Bebas Neue', sans-serif; margin-top: 10px; width: 100%; }
+        button { background: linear-gradient(180deg, var(--gold), var(--gold2)); border: none; padding: 12px 20px; border-radius: 30px; cursor: pointer; font-family: 'Bebas Neue', sans-serif; margin-top: 10px; width: 100%; color: #000; }
         
         @media print {
             body * { visibility: hidden; }
@@ -46,7 +46,6 @@
 </div>
 
 <script>
-    // Initialize Dashboard
     function loadStoreList() {
         let stores = JSON.parse(localStorage.getItem("Tiffy_All_Stores") || '["Sugarloaf"]');
         let sel = document.getElementById('storeSwitcher');
